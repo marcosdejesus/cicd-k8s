@@ -1,0 +1,46 @@
+Description: >
+  Udacity Cloud DevOps NanoDegree/2020 - Marcos Antonio de Jesus Filho
+  Capstone Project
+  Infrastructure 2 - Creation of the Node Group for our cluster
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Description: Name that will be prefixed tot resources names
+    Default: eks-cluster
+
+Resources:
+  NodeGroupRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+
+  NodeGroup:
+    Type: 'AWS::EKS::Nodegroup'
+    Properties:
+      AmiType: AL2_x86_64
+      ClusterName: devCluster
+      NodeRole: !GetAtt 
+        - NodeGroupRole
+        - Arn
+      NodegroupName: linux-nodes
+      ScalingConfig:
+        DesiredSize: 2
+        MaxSize: 3
+        MinSize: 1
+      Subnets: !Split 
+        - ','
+        - Fn::ImportValue:
+            !Sub '${EnvironmentName}-privatesubs'

@@ -2,9 +2,14 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: >
   Udacity Cloud DevOps NanoDegree/2020 - Marcos Antonio de Jesus Filho
   Capstone Project
-  Infrastructure 1 - Creatiion of Network and EKS Cluster
+  Infrastructure 1 - Creation of Network and EKS Cluster
 
 Parameters:
+
+  EnvironmentName:
+    Description: Name that will be prefixed to resources names
+    Type: String
+    Default: eks-cluster
 
   VpcBlock:
     Type: String
@@ -31,19 +36,6 @@ Parameters:
     Default: 192.168.192.0/18
     Description: CidrBlock for private subnet 02 within the VPC
 
-Metadata:
-  AWS::CloudFormation::Interface:
-    ParameterGroups:
-      -
-        Label:
-          default: "Worker Network Configuration"
-        Parameters:
-          - VpcBlock
-          - PublicSubnet01Block
-          - PublicSubnet02Block
-          - PrivateSubnet01Block
-          - PrivateSubnet02Block
-
 Resources:
   VPC:
     Type: AWS::EC2::VPC
@@ -53,7 +45,7 @@ Resources:
       EnableDnsHostnames: true
       Tags:
       - Key: Name
-        Value: !Sub '${AWS::StackName}-VPC'
+        Value: !Sub '${EnvironmentName}-VPC'
 
   InternetGateway:
     Type: "AWS::EC2::InternetGateway"
@@ -133,7 +125,7 @@ Resources:
       SubnetId: !Ref PublicSubnet01
       Tags:
       - Key: Name
-        Value: !Sub '${AWS::StackName}-NatGatewayAZ1'
+        Value: !Sub '${EnvironmentName}-NatGatewayAZ1'
 
   NatGateway02:
     DependsOn:
@@ -146,7 +138,7 @@ Resources:
       SubnetId: !Ref PublicSubnet02
       Tags:
       - Key: Name
-        Value: !Sub '${AWS::StackName}-NatGatewayAZ2'
+        Value: !Sub '${EnvironmentName}-NatGatewayAZ2'
 
   NatGatewayEIP1:
     DependsOn:
@@ -179,7 +171,7 @@ Resources:
         Ref: VPC
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-PublicSubnet01"
+        Value: !Sub "${EnvironmentName}-PublicSubnet01"
       - Key: kubernetes.io/role/elb
         Value: 1
 
@@ -200,7 +192,7 @@ Resources:
         Ref: VPC
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-PublicSubnet02"
+        Value: !Sub "${EnvironmentName}-PublicSubnet02"
       - Key: kubernetes.io/role/elb
         Value: 1
 
@@ -220,7 +212,7 @@ Resources:
         Ref: VPC
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-PrivateSubnet01"
+        Value: !Sub "${EnvironmentName}-PrivateSubnet01"
       - Key: kubernetes.io/role/internal-elb
         Value: 1
 
@@ -240,7 +232,7 @@ Resources:
         Ref: VPC
       Tags:
       - Key: Name
-        Value: !Sub "${AWS::StackName}-PrivateSubnet02"
+        Value: !Sub "${EnvironmentName}-PrivateSubnet02"
       - Key: kubernetes.io/role/internal-elb
         Value: 1
 
@@ -274,11 +266,49 @@ Resources:
       GroupDescription: Cluster communication with worker nodes
       VpcId: !Ref VPC
 
+  ControlPlaneRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - eks.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+
+  ControlPlane:
+    Type: 'AWS::EKS::Cluster'
+    Properties:
+      Name: devCluster
+      ResourcesVpcConfig:
+        SecurityGroupIds:
+          - !Ref ControlPlaneSecurityGroup
+        SubnetIds:
+          - !Ref PublicSubnet01
+          - !Ref PublicSubnet02
+          - !Ref PrivateSubnet01
+          - !Ref PrivateSubnet02
+      RoleArn: !GetAtt 
+        - ControlPlaneRole
+        - Arn
+      Version: '1.17'
+
 Outputs:
 
   SubnetIds:
     Description: Subnets IDs in the VPC
     Value: !Join [ ",", [ !Ref PublicSubnet01, !Ref PublicSubnet02, !Ref PrivateSubnet01, !Ref PrivateSubnet02 ] ]
+
+  PrivateSubnetIds:
+    Description: Private Subnet IDs
+    Value: !Join [ ",", [ !Ref PrivateSubnet01, !Ref PrivateSubnet02 ] ]
+    Export:
+      Name: !Sub '${EnvironmentName}-privatesubs' 
 
   SecurityGroups:
     Description: Security group for the cluster control plane communication with worker nodes
@@ -287,3 +317,9 @@ Outputs:
   VpcId:
     Description: The VPC Id
     Value: !Ref VPC
+
+  ClusterName:
+    Description: EKS cluster name
+    Value: !Ref ControlPlane 
+    Export:
+      Name: !Sub '${EnvironmentName}-clustername'
