@@ -24,7 +24,7 @@ pipeline {
         }
         stage('Build Image') {
             steps {
-                image = docker.build('marcosdejesus/nginx-demo')
+                builtImage = docker.build('marcosdejesus/nginx-demo')
             }
         }
         stage('Deploy') {
