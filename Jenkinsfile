@@ -2,9 +2,19 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Linting HTML and Dockerfile') {
             steps {
-                echo 'Building..'
+                sh 'tidy -q -e *.html'
+            }
+        }
+        stage ("lint dockerfile") {
+            agent {
+                docker {
+                    image 'hadolint/hadolint:latest-debian'
+                }
+            }
+            steps {
+                sh 'hadolint Dockerfile'
             }
         }
         stage('Test') {
