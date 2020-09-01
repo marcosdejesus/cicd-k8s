@@ -1,9 +1,9 @@
 pipeline {
     agent any
 
-    def builtImage
 
     stages {
+        def builtImage
         stage('Linting HTML and Dockerfile') {
             steps {
                 sh 'tidy -q -e *.html'
