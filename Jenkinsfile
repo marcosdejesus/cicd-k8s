@@ -1,6 +1,8 @@
 pipeline {
     agent any
 
+    def builtImage
+
     stages {
         stage('Linting HTML and Dockerfile') {
             steps {
