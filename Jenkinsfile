@@ -22,6 +22,11 @@ pipeline {
                 echo 'Testing..'
             }
         }
+        stage('Build Image') {
+            steps {
+                image = docker.build('marcosdejesus/nginx-demo')
+            }
+        }
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
