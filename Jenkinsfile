@@ -3,7 +3,6 @@ pipeline {
 
 
     stages {
-        def builtImage
         stage('Linting HTML and Dockerfile') {
             steps {
                 sh 'tidy -q -e *.html'
@@ -26,7 +25,7 @@ pipeline {
         }
         stage('Build Image') {
             steps {
-                builtImage = docker.build('marcosdejesus/nginx-demo')
+                def builtImage = docker.build('marcosdejesus/nginx-demo')
             }
         }
         stage('Deploy') {
