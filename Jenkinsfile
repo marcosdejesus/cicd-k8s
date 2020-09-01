@@ -1,3 +1,5 @@
+def builtImage
+
 pipeline {
     agent any
 
@@ -25,7 +27,9 @@ pipeline {
         }
         stage('Build Image') {
             steps {
-                def builtImage = docker.build('marcosdejesus/nginx-demo')
+                script {
+                    builtImage = docker.build('marcosdejesus/nginx-demo')
+                }
             }
         }
         stage('Deploy') {
