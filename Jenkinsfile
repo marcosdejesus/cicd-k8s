@@ -20,11 +20,6 @@ pipeline {
                 sh 'hadolint Dockerfile'
             }
         }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-            }
-        }
         stage('Build Image') {
             steps {
                 script {
@@ -37,6 +32,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
+            }
+        }
+        stage('Clean up'){
+            steps{
+                sh "docker rmi $registry:${env.BUILD_NUMBER}"
             }
         }
     }
