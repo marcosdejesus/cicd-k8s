@@ -1,8 +1,8 @@
-def builtImage
-
 pipeline {
     agent any
-
+    environmet {
+        registry = 'marcosdejesus/ngix-demo'
+    }
 
     stages {
         stage('Linting HTML and Dockerfile') {
@@ -28,7 +28,9 @@ pipeline {
         stage('Build Image') {
             steps {
                 script {
-                    builtImage = docker.build('marcosdejesus/nginx-demo')
+                    withDockerRegistry(credentialsId: 'docker-hub-credentials', toolName: 'Stable docker') {
+                        docker.build(registry).push(BUILD_NUMBER)
+                    }
                 }
             }
         }
