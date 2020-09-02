@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    environmet {
+    environment {
         registry = 'marcosdejesus/ngix-demo'
     }
 
