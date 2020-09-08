@@ -35,6 +35,7 @@ pipeline {
                     returnStdout: true,
                     script: 'kubectl get service nginx-service -o=jsonpath=\'{.spec.selector.role}{"\\n"}\''
                 )}"""
+                TARGET_ROLE = "${env.ACTIVE_ROLE == "blue" ? "green" : "blue"}"
             }
             steps {
                 echo ACTIVE_ROLE
