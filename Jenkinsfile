@@ -35,11 +35,11 @@ pipeline {
                     returnStdout: true,
                     script: 'kubectl get service nginx-service -o=jsonpath=\'{.spec.selector.role}{"\\n"}\''
                 )}"""
-                TARGET_ROLE = "${env.ACTIVE_ROLE == "blue" ? "green" : "blue"}"
+                TARGET_ROLE = "${env.ACTIVE_ROLE.trim() == "blue" ? "green" : "blue"}"
             }
             steps {
-                echo "${ACTIVE_ROLE.getClass()}"
-                echo "${TARGET_ROLE.getClass()}"
+                echo ACTIVE_ROLE
+                echo TARGET_ROLE
             }
         }
         stage('Clean up'){
