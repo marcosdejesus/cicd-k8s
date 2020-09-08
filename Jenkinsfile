@@ -30,16 +30,14 @@ pipeline {
             }
         }
         stage('Identify the environment') {
-/*
             environment {
                 ACTIVE_ROLE = """${sh(
                     returnStdout: true,
                     script: 'kubectl get service nginx-service -o=jsonpath=\'{.spec.selector.role}{"\\n"}\''
                 )}"""
             }
-*/
             steps {
-                sh 'kubectl config view'
+                echo ACTIVE_ROLE
             }
         }
         stage('Clean up'){
