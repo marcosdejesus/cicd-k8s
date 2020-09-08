@@ -38,8 +38,8 @@ pipeline {
                 TARGET_ROLE = "${env.ACTIVE_ROLE == "blue" ? "green" : "blue"}"
             }
             steps {
-                echo ACTIVE_ROLE
-                echo TARGET_ROLE
+                echo '${ACTIVE_ROLE.getClass()}'
+                echo '${TARGET_ROLE.getClass()}'
             }
         }
         stage('Clean up'){
