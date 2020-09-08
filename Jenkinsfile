@@ -39,6 +39,7 @@ pipeline {
             }
             steps {
                 echo ACTIVE_ROLE
+                echo TARGET_ROLE
             }
         }
         stage('Clean up'){
