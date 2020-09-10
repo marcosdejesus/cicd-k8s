@@ -2,6 +2,8 @@ pipeline {
     agent any
     environment {
         registry = 'marcosdejesus/ngix-demo'
+        ACTIVE_ROLE = ''
+        TARGET_ROLE = ''
     }
 
     stages {
@@ -30,14 +32,10 @@ pipeline {
             }
         }
         stage('Identify the environment') {
-            environment {
-                ACTIVE_ROLE = """${sh(
-                    returnStdout: true,
-                    script: 'kubectl get service nginx-service -o=jsonpath=\'{.spec.selector.role}{"\\n"}\''
-                )}"""
-                TARGET_ROLE = "${env.ACTIVE_ROLE.trim() == "blue" ? "green" : "blue"}"
-            }
             steps {
+                env.ACTIVE_ROLE = sh returnStdout: true
+                    , script: 'kubectl get service nginx-service -o=jsonpath=\'{.spec.selector.role}{"\\n"}\''
+                env.TARGET_ROLE = "${env.ACTIVE_ROLE.trim() == "blue" ? "green" : "blue"}"
                 echo ACTIVE_ROLE
                 echo TARGET_ROLE
             }
