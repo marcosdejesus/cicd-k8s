@@ -42,6 +42,11 @@ pipeline {
                 echo TARGET_ROLE
             }
         }
+        stage('Deploy') {
+            steps {
+                echo "Deploying to $TARGET_ROLE"
+            }
+        }
         stage('Clean up'){
             steps{
                 sh "docker rmi $registry:${env.BUILD_NUMBER}"
