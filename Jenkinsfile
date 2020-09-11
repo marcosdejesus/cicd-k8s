@@ -36,9 +36,6 @@ pipeline {
                     env.ACTIVE_ROLE = sh(returnStdout: true, script: 'kubectl get service nginx-service -o=jsonpath=\'{.spec.selector.role}{"\\n"}\'').trim()
                     env.TARGET_ROLE = env.ACTIVE_ROLE == "blue" ? "green" : "blue"
                 }
-                sh 'printenv'
-                //echo ACTIVE_ROLE
-                //echo TARGET_ROLE
             }
         }
         stage('Deploy') {
