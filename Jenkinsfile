@@ -54,7 +54,7 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 script {
-                    env.TEST_ENDPOINT = sh(returnStdout: true, script: 'kubectl get -f test-endpoint.yaml -o=jsonpath=\'{.status.loadBalancer.ingress[0].hostname}{"\\n"}\'').trim()
+                    env.TEST_ENDPOINT = sh(returnStdout: true, script: 'kubectl get service nginx-test-service -o=jsonpath=\'{.status.loadBalancer.ingress[0].hostname}{"\\n"}\'').trim()
                 }
                 input message: "Is the deployment at $env.TEST_ENDPOINT working as desired?"
             }
