@@ -33,8 +33,12 @@ pipeline {
         stage('Identify the environment') {
             steps {
                 script {
-                    env.ACTIVE_ROLE = sh(returnStdout: true, script: 'kubectl get service nginx-service -o=jsonpath=\'{.spec.selector.role}{"\\n"}\'').trim()
-                    env.TARGET_ROLE = env.ACTIVE_ROLE == "blue" ? "green" : "blue"
+                    try {
+                        env.ACTIVE_ROLE = sh(returnStdout: true, script: 'kubectl get service nginx-service -o=jsonpath=\'{.spec.selector.role}{"\\n"}\'').trim()
+                        env.TARGET_ROLE = env.ACTIVE_ROLE == "blue" ? "green" : "blue"
+                    } catch (err) {
+                        env.TARGET_ROLE = 'blue'
+                    }
                 }
             }
         }
