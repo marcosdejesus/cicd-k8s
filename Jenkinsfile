@@ -42,7 +42,10 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo "Deploying to $TARGET_ROLE"
+                dir('./k8config') {
+                    sh "sed -e 's/%TARGET_ROLE%/${env.TARGET_ROLE}/g' -e 's/%IMAGE_VERSION%/${env.BUILD_NUMBER}/g' template/deploymentTemplate.yaml > Deployment.yaml"
+                    sh 'cat Deployment.yaml'
+                }
             }
         }
         stage('Clean up'){
