@@ -44,7 +44,9 @@ pipeline {
             steps {
                 dir('./k8config') {
                     sh "sed -e 's/%TARGET_ROLE%/${env.TARGET_ROLE}/g' -e 's/%IMAGE_VERSION%/${env.BUILD_NUMBER}/g' template/deploymentTemplate.yaml > Deployment.yaml"
-                    sh 'cat Deployment.yaml'
+                    sh "sed s/%TARGET_ROLE%/${env.TARGET_ROLE}/g template/test-serviceTemplate.yaml > test-endpoint.yaml"
+                    sh 'kubectl apply -f Deployment.yaml test-endpoint.yaml'
+                    sh 'kubectl get -f test-endpoint.yaml -o=jsonpath=\'{.status.loadBalancer.ingress[0].hostname}{"\\n"}\''
                 }
             }
         }
