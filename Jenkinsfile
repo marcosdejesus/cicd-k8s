@@ -59,7 +59,7 @@ pipeline {
                 echo 'Switching'
                 dir('./k8config') {
                     sh "sed s/%TARGET_ROLE%/${env.TARGET_ROLE}/g template/serviceTemplate.yaml > endpoint.yaml"
-                    sh 'cat endpoint.yaml'
+                    sh 'kubectl apply -f endpoint.yaml'
                 }
             }
         }
