@@ -2,8 +2,6 @@ pipeline {
     agent any
     environment {
         registry = 'marcosdejesus/ngix-demo'
-        ACTIVE_ROLE = ''
-        TARGET_ROLE = ''
     }
 
     stages {
