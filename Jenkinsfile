@@ -27,6 +27,7 @@ pipeline {
                         docker.build(registry).push(BUILD_NUMBER)
                     }
                 }
+                sh "docker rmi $registry:${env.BUILD_NUMBER}"
             }
         }
         stage('Identify the environment') {
@@ -53,17 +54,18 @@ pipeline {
         stage('Switch production') {
             input {
                 message "Do you want to switch all the traffic to the new deployment?"
-                parameters {
-                    booleanParam(name: 'CONFIRMATION', defaultValue: true, description: '')
-                }
             }
             steps {
                 echo 'Switching'
+                dir('./k8config') {
+                    sh "sed s/%TARGET_ROLE%/${env.TARGET_ROLE}/g template/serviceTemplate.yaml > endpoint.yaml"
+                    sh 'cat endpoint.yaml'
+                }
             }
         }
         stage('Clean up'){
             steps{
-                sh "docker rmi $registry:${env.BUILD_NUMBER}"
+                echo 'Cleaning up'
             }
         }
     }
