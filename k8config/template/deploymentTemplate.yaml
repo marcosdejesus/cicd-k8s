@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment-%TARGET_ROLE%
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+      role: %TARGET_ROLE%
+  template:
+    metadata:
+      labels:
+        app: nginx
+        role: %TARGET_ROLE%
+    spec:
+      containers:
+      - name: nginx-demo
+        image: marcosdejesus/ngix-demo:%IMAGE_VERSION%
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
