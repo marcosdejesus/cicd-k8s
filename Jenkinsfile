@@ -50,6 +50,12 @@ pipeline {
                 }
             }
         }
+        stage('Switch production') {
+            steps {
+                input(message: 'Do you want to switch to the new deployment?', ok: 'Yes')
+                echo 'Switching'
+            }
+        }
         stage('Clean up'){
             steps{
                 sh "docker rmi $registry:${env.BUILD_NUMBER}"
