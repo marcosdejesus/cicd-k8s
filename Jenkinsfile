@@ -51,8 +51,13 @@ pipeline {
             }
         }
         stage('Switch production') {
+            input {
+                message "Do you want to switch all the traffic to the new deployment?"
+                parameters {
+                    booleanParam(name: 'CONFIRMATION', defaultValue: true, description: '')
+                }
+            }
             steps {
-                input(message: 'Do you want to switch to the new deployment?', ok: 'Yes')
                 echo 'Switching'
             }
         }
