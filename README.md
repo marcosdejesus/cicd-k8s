@@ -1,10 +1,6 @@
 CI/CD pipeline for a simple web application using CloudFormation, Jenkins and Kubernetes
 ===
 
-## Table of Contents
-
-[TOC]
-
 ## Configuration steps
 
 To deploy this project we will need an EC2 Instance with Jenkins, AWS kubectl and tidy installed. All the commands will be executed inside this instance.
